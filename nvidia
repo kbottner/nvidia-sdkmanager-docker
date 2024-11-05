@@ -1,0 +1,44 @@
+#/bin/bash
+
+# Make sure the localhost is in the xhost authorization list so X11 apps will
+# display on the host.
+xhost +localhost
+
+# Check for a directory and create it if it doesn't exist
+create_directory_if_not_exists() {
+    local directory="$1"
+
+    if [ ! -d "$directory" ]; then
+        mkdir -p "$directory"
+        echo "Jetson build directory created: $directory"
+    else
+        echo "Jetson build directory already exists: $directory"
+    fi
+}
+
+# See if a build .nvsdkm directory exists, if not create it.
+create_directory_if_not_exists "./jetson/.nvsdkm"
+
+# See if a build downloads directory exists, if not create it.
+create_directory_if_not_exists "./jetson/downloads"
+
+# See if a build nvidia directory exists, if not create it.
+create_directory_if_not_exists "./jetson/nvidia"
+
+# You will notice the use of --privileged, get over it as the dev kit is NOT
+# mounted as a USB device. This is the only way for the sdkmanager to detect the
+# device.
+
+docker run -it --rm \
+  --net=host \
+  --privileged \
+  --env DISPLAY=${DISPLAY} \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /dev/bus/usb:/dev/bus/usb \
+  -v ./jetson/.nvsdkm:/home/nvidia/.nvsdkm \
+  -v ./jetson/downloads:/home/nvidia/Downloads \
+  -v ./jetson/nvidia:/home/nvidia/nvidia \
+  --hostname NVIDIA \
+  --add-host NVIDIA:127.0.0.1 \
+  --name nvidia-sdkmanager \
+  nvidia-sdkmanager
