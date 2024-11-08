@@ -3,7 +3,7 @@
 #
 # Last modified: 2024-11-05
 #
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Set environment variables to avoid user prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -37,7 +37,7 @@ RUN apt-get update && \
     network-manager \
     openssh-client \
     policykit-1 \
-    python \
+    python3 \
     qemu-kvm \
     qemu-user-static \
     software-properties-common \
@@ -45,6 +45,7 @@ RUN apt-get update && \
     sudo \
     usbutils \
     wget \
+    whois \
     x11-apps \
     && rm -rf /var/lib/apt/lists/*
   
